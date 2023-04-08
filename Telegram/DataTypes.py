@@ -2,9 +2,24 @@ import json
 
 
 class User:
-    def __init__(self, filePath):
-        with open(filePath, 'r') as f:
-            self.data = json.load(f)
-    
+    def __init__(self, data):
+        for k, v in data .items():
+            self.__setattr__(k,v)
+
     def __str__(self):
-        return self.data['username']
+        return str(self.__dict__)
+
+
+class Update:
+    def __init__(self, data):
+        ...
+
+
+class Message:
+    ...
+
+
+class Chat:
+    def __init__(self, data):
+        for k, v in data.items():
+            self.__setattr__(k, v)

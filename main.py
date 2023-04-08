@@ -1,12 +1,10 @@
 import Telegram
 import asyncio
 
+async def main():
+    bot = Telegram.Telegram('6029827241:AAHH3CtJ9WypzEBYn2-u73J096KEuyZ8SZU')
+    print(await bot.getMe())
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    Telegram
-    bot = Telegram.Telegram('token')
-    a = loop.create_task(bot.getMe())
-    print(a
-          )
+    asyncio.run(main())
 

@@ -9,4 +9,5 @@ class Telegram():
         
     async def getMe(self):
         async with self.session.get(self.apiEndpoint + 'getMe') as response:
-            return DataTypes.User(json.loads(await response.text())['result'])
+            if await json.loads(response.text())['ok']:
+                return DataTypes.User(json.loads(await response.text())['result'])
