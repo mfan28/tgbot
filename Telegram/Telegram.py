@@ -1,5 +1,6 @@
 import aiohttp
 from . import DataTypes
+from . import Handler
 import json
 from typing import List
 
@@ -9,11 +10,16 @@ class Telegram():
         self.session = aiohttp.ClientSession()
         self.apiEndpoint = f'https://api.telegram.org/bot{token}/'
         self.offset = 0
-        
+        self.updates = []
+        self.handlers = []
+
     async def getMe(self) -> DataTypes.User:
         async with self.session.get(self.apiEndpoint + 'getMe') as response:
             if await json.loads(response.text())['ok']:
                 return DataTypes.User(json.loads(await response.text())['result'])
+
+    def addHandler(self, handler: Handler):
+        self.handlers.append(handler)
 
     async def getUpdates(self) -> List:
         async with self.session.get(self.apiEndpoint + 'getUpdates', params={'timeout': 10, 'offset': self.offset}) as response:
@@ -23,3 +29,16 @@ class Telegram():
                 return [DataTypes.Update(i) for i in response['result']]
             else:
                 return []
+
+    async def sendMessage(self, chat: DataTypes.Chat, text: str) -> DataTypes.Message:
+        async with self.session.post(self.apiEndpoint + 'sendMessage', params={'chat_id': chat.id, 'text': text}) as response:
+            respose = json.loads(await response.text())
+            if response['ok'] and response['result']:
+                return DataTypes.Message(response['result'])
+
+    async def editMessageText(self, chat: DataTypes.Chat, message: DataTypes.Message, text: str) -> DataTypes.Message:
+        async with self.session.post(self.apiEndpoint + 'editMessageText', params={'chat_id': chat.id, 'message_id': message.id, 'text': text}) as response:
+            response = json.loads(await response.text())
+            if response['ok'] and response['result']:
+                return DataTypes.Message(response['result'])
+
