@@ -40,10 +40,19 @@ class Telegram:
                 return DataTypes.Message(response['result'])
 
     async def editMessageText(self, chat: DataTypes.Chat, message: DataTypes.Message, text: str) -> DataTypes.Message:
-        async with self.session.post(self.apiEndpoint + 'editMessageText', params={'chat_id': chat.id, 'message_id': message.id, 'text': text}) as response:
+        async with self.session.post(self.apiEndpoint + 'editMessageText', params={'chat_id': chat.id, 'message_id': message.message_id, 'text': text}) as response:
             response = json.loads(await response.text())
             if response['ok'] and response['result']:
                 return DataTypes.Message(response['result'])
+
+    async def sendChatAction(self, chat: DataTypes.Chat, action: str) -> bool:
+        async with self.session.post(self.apiEndpoint + 'sendChatAction', params={'chat_id': chat.id, 'action': action}) as response:
+            response = json.loads(await response.text())
+        if response:
+            return True
+        else:
+            return False
+
 
     async def run(self):
         while True:
@@ -52,3 +61,4 @@ class Telegram:
                 for j in self.handlers:
                     if await j.check(self, i):
                         break
+                self.updates.remove(i)

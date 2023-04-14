@@ -14,8 +14,7 @@ class Handler:
 
     async def check(self, bot: Telegram, update: DataTypes.Update) -> bool:
         if self.text in update.message.text:
-            loop = asyncio.get_event_loop()
-            loop.create_task(self.callback(bot, update))
+            await self.callback(bot, update)
             return True
         else:
             return False
