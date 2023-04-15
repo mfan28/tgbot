@@ -3,13 +3,14 @@ import asyncio
 import logging
 import openai
 import config
+import UserManager
 from time import time
 
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     message = await bot.sendMessage(update.message.chat, 'Бот обрабатывает ваш запрос...')
     comp = await openai.ChatCompletion.acreate(
-        model='gpt-3.5-turbo',
+        model='gpt-3.5-turbo-0301',
         messages=[
             {'role': 'user', 'content': f'{update.message.text}'}
         ],
@@ -28,6 +29,7 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
 
 
 if __name__ == '__main__':
+    UserManager = UserManager.UserManager()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     openai.api_key = config.OPENAI_API_KEY
     loop = asyncio.get_event_loop()

@@ -1,5 +1,7 @@
 .fleet
 .venv
 Telegram/__pycache__
+UserManager/__pycache__
+UserManager/Users/*
 config.py
 __pycache__
