@@ -8,6 +8,7 @@ from time import time
 
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
+    cachedUser = UserManager[update.message.chat.id]
     message = await bot.sendMessage(update.message.chat, 'Бот обрабатывает ваш запрос...')
     comp = await openai.ChatCompletion.acreate(
         model='gpt-3.5-turbo-0301',
@@ -27,6 +28,9 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
             message = await bot.editMessageText(message.chat, message, j)
     await bot.editMessageText(message.chat, message, j)
 
+async def start(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
+    UserManager.createUser(update.message.chat)
+    await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы зарегистрированы')
 
 if __name__ == '__main__':
     UserManager = UserManager.UserManager()
@@ -35,6 +39,8 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     bot = Telegram.Telegram(config.TELEGRAM_API_KEY)
     kekHandler = Telegram.Handler('', kek)
+    startHandler = Telegram.Handler('/start', start)
+    bot.addHandler(startHandler)
     bot.addHandler(kekHandler)
     loop.create_task(bot.run())
     loop.run_forever()
