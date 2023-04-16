@@ -8,7 +8,7 @@ class Handler:
     def __init__(self, text: str, callback: Callable):
         self.text = text
         self.callback = callback
-        
+
     def __repr__(self):
         return f'((HANDLER) (CALLBACK = {self.callback}) (TEXT = {self.text}))'
 
@@ -18,4 +18,3 @@ class Handler:
             return True
         else:
             return False
-        

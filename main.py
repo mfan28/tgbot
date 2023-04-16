@@ -4,17 +4,21 @@ import logging
 import openai
 import config
 import UserManager
+from UserManager import Exceptions
 from time import time
 
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
-    cachedUser = UserManager[update.message.chat.id]
+    try:
+        cachedUser = UserManager[update.message.chat.id]
+    except Exceptions.NotRegistered:
+        await bot.sendMessage(update.message.chat, 'Вы не зарегистрированы')
+        return
+    cachedUser.cachedUser['context'].append({'role': 'user', 'content': update.message.text})
     message = await bot.sendMessage(update.message.chat, 'Бот обрабатывает ваш запрос...')
     comp = await openai.ChatCompletion.acreate(
         model='gpt-3.5-turbo-0301',
-        messages=[
-            {'role': 'user', 'content': f'{update.message.text}'}
-        ],
+        messages=cachedUser.cachedUser['context'],
         stream=True
     )
     j = ''
@@ -27,10 +31,14 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
             await bot.sendChatAction(message.chat, Telegram.Actions.TYPING)
             message = await bot.editMessageText(message.chat, message, j)
     await bot.editMessageText(message.chat, message, j)
+    cachedUser.cachedUser['context'].append({'role': 'assistant', 'content': j})
+    cachedUser.save()
+
 
 async def start(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     UserManager.createUser(update.message.chat)
     await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы зарегистрированы')
+
 
 if __name__ == '__main__':
     UserManager = UserManager.UserManager()

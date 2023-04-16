@@ -25,7 +25,8 @@ class Telegram:
         logging.info(f'handler {handler} added')
 
     async def getUpdates(self) -> List[DataTypes.Update]:
-        async with self.session.get(self.apiEndpoint + 'getUpdates', params={'timeout': 10, 'offset': self.offset}) as response:
+        async with self.session.get(self.apiEndpoint + 'getUpdates',
+                                    params={'timeout': 10, 'offset': self.offset}) as response:
             response = json.loads(await response.text())
             if response['ok'] and response['result']:
                 self.offset = response['result'][-1]['update_id'] + 1
@@ -34,25 +35,28 @@ class Telegram:
                 return []
 
     async def sendMessage(self, chat: DataTypes.Chat, text: str) -> DataTypes.Message:
-        async with self.session.post(self.apiEndpoint + 'sendMessage', params={'chat_id': chat.id, 'text': text}) as response:
+        async with self.session.post(self.apiEndpoint + 'sendMessage',
+                                     params={'chat_id': chat.id, 'text': text}) as response:
             response = json.loads(await response.text())
             if response['ok'] and response['result']:
                 return DataTypes.Message(response['result'])
 
     async def editMessageText(self, chat: DataTypes.Chat, message: DataTypes.Message, text: str) -> DataTypes.Message:
-        async with self.session.post(self.apiEndpoint + 'editMessageText', params={'chat_id': chat.id, 'message_id': message.message_id, 'text': text}) as response:
+        async with self.session.post(self.apiEndpoint + 'editMessageText',
+                                     params={'chat_id': chat.id, 'message_id': message.message_id,
+                                             'text': text}) as response:
             response = json.loads(await response.text())
             if response['ok'] and response['result']:
                 return DataTypes.Message(response['result'])
 
     async def sendChatAction(self, chat: DataTypes.Chat, action: str) -> bool:
-        async with self.session.post(self.apiEndpoint + 'sendChatAction', params={'chat_id': chat.id, 'action': action}) as response:
+        async with self.session.post(self.apiEndpoint + 'sendChatAction',
+                                     params={'chat_id': chat.id, 'action': action}) as response:
             response = json.loads(await response.text())
         if response:
             return True
         else:
             return False
-
 
     async def run(self):
         while True:

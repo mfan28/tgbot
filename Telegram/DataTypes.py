@@ -4,7 +4,7 @@ from typing import Dict
 
 class User:
     def __init__(self, data: Dict):
-        for k, v in data .items():
+        for k, v in data.items():
             self.__setattr__(k, v)
 
     def __repr__(self):
