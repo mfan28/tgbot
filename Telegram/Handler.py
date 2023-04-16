@@ -1,7 +1,6 @@
 from typing import Callable
 from . import DataTypes
 from . import Telegram
-import asyncio
 
 
 class Handler:
@@ -18,3 +17,17 @@ class Handler:
             return True
         else:
             return False
+
+
+class CommandHandler(Handler):
+    def __init__(self, command: str, callback: Callable):
+        super().__init__('/' + command, callback)
+        self.command = command
+        self.callback = callback
+
+    def __repr__(self):
+        return super().__repr__()
+
+    async def check(self, bot: Telegram, update: DataTypes.Update) -> bool:
+        return await super().check(bot, update)
+

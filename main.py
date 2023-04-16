@@ -36,8 +36,22 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
 
 
 async def start(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
-    UserManager.createUser(update.message.chat)
-    await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы зарегистрированы')
+    if update.message.chat not in UserManager.users():
+        UserManager.createUser(update.message.chat)
+        await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы зарегистрированы')
+    else:
+        await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы не нуждаетесь в регистрации')
+
+
+async def clear_context(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
+    try:
+        cachedUser = UserManager[update.message.chat.id]
+    except Exceptions.NotRegistered:
+        await bot.sendMessage(update.message.chat, 'Вы не зарегистрированы')
+        return
+    cachedUser.cachedUser['context'] = []
+    cachedUser.save()
+    await bot.sendMessage(update.message.chat, 'Контекст очищен')
 
 
 if __name__ == '__main__':
@@ -46,9 +60,8 @@ if __name__ == '__main__':
     openai.api_key = config.OPENAI_API_KEY
     loop = asyncio.get_event_loop()
     bot = Telegram.Telegram(config.TELEGRAM_API_KEY)
-    kekHandler = Telegram.Handler('', kek)
-    startHandler = Telegram.Handler('/start', start)
-    bot.addHandler(startHandler)
-    bot.addHandler(kekHandler)
+    bot.addHandler(Telegram.Handler.CommandHandler('start', start))
+    bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', clear_context))
+    bot.addHandler(Telegram.Handler.Handler('', kek))
     loop.create_task(bot.run())
     loop.run_forever()

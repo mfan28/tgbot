@@ -1,6 +1,6 @@
 import aiohttp
 from . import DataTypes
-from . import Handler
+from .Handler import Handler, CommandHandler
 import json
 from typing import List
 import logging
@@ -14,6 +14,16 @@ class Telegram:
         self.updates = []
         self.handlers = []
         logging.info('bot init success')
+
+    async def setMyCommands(self):
+        a = [json.loads(str(DataTypes.BotCommand(i.command, "")).replace('\'', '\"')) for i in self.handlers if isinstance(i, CommandHandler)]
+        print(str(a))
+        async with self.session.get(self.apiEndpoint + 'setMyCommands', params={'commands': str(a)}) as response:
+            if json.loads(await response.text()):
+                print(json.loads(await response.text()))
+                return True
+            else:
+                False
 
     async def getMe(self) -> DataTypes.User:
         async with self.session.get(self.apiEndpoint + 'getMe') as response:
@@ -59,6 +69,7 @@ class Telegram:
             return False
 
     async def run(self):
+        await self.setMyCommands()
         while True:
             self.updates = await self.getUpdates()
             for i in self.updates:

@@ -15,7 +15,7 @@ class UserManager:
     def createUser(self, chat: Chat):
         if str(chat.id) not in self.users():
             with open(self.UsersFolder + str(chat.id), 'w') as f:
-                json.dump({'id': chat.id, 'username': chat.username, 'context': []}, f)
+                json.dump({'id': chat.id, 'username': chat.username, 'context': []}, f, indent='\t', ensure_ascii=False)
 
     def __getitem__(self, item):
         return CachedUser(item)
@@ -36,5 +36,5 @@ class CachedUser:
 
     def save(self):
         with open(self.UserManager.UsersFolder + str(self.id), 'w') as f:
-            json.dump(self.cachedUser, f)
+            json.dump(self.cachedUser, f, indent='\t', ensure_ascii=False)
         del self.UserManager.cachedUsers[self.id]

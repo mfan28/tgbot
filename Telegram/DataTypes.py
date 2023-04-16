@@ -52,3 +52,12 @@ class Chat:
 
     def __repr__(self):
         return str(self.__dict__)
+
+
+class BotCommand:
+    def __init__(self, command: str, decription: str):
+        self.command = command
+        self.decription = decription
+
+    def __repr__(self):
+        return str(self.__dict__)
