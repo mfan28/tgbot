@@ -4,10 +4,21 @@ import logging
 import openai
 import config
 from UserManager import Exceptions
+from flask import Flask, request
 from time import time
 import time as t
+from threading import Thread
 
 
+def web(bot: Telegram.Telegram):
+    app = Flask(__name__)
+
+    @app.route('/')
+    def index():
+        print(request.json)
+        return ''
+
+    app.run(host=config.HOST, port=config.PORT, ssl_context=(config.CERT, config.KEY))
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     try:
@@ -65,5 +76,6 @@ if __name__ == '__main__':
     bot.addHandler(Telegram.Handler.CommandHandler('start', start, "start"))
     bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', clear_context, "clear context"))
     bot.addHandler(Telegram.Handler.Handler('', kek))
-    loop.create_task(bot.run())
+    loop.create_task(bot.run(webhook=True))
+    Thread(target=web, args=(bot,)).start()
     loop.run_forever()

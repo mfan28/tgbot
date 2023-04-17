@@ -105,10 +105,11 @@ class Telegram:
         else:
             asyncio.create_task(self.UserManager.clearCache())
             self.session = aiohttp.ClientSession()
-            await self.setWebhook()
+            #await self.setWebhook()
             await self.setMyCommands()
             while True:
                 for i in self.updates:
+                    logging.info(i)
                     for j in self.handlers:
                         if await j.check(self, i):
                             break
