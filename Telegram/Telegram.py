@@ -7,8 +7,9 @@ from typing import List
 import logging
 import asyncio
 import UserManager
+import Singleton
 
-
+@Singleton.singleton
 class Telegram:
     def __init__(self, token: str, url: str='', cert: str=''):
         self.apiEndpoint = f'https://api.telegram.org/bot{token}/'
@@ -34,7 +35,8 @@ class Telegram:
         with open(self.cert, 'rb') as f:
             formdata.add_field('file', BytesIO(f.read()))
         async with self.session.post(self.apiEndpoint + 'setWebhook', params={'url': self.url, 'certificate': formdata}) as response:
-            if json.loads(await response.text()):
+            logging.info(json.loads(await response.text()))
+            if json.loads(await response.text())['ok']:
                 logging.info(f'Webhook setted on {self.url}')
                 return True
             else:

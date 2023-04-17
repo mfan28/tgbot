@@ -6,7 +6,8 @@ import config
 from UserManager import Exceptions
 from time import time
 import time as t
-from flask import Flask
+
+
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     try:
@@ -57,10 +58,12 @@ async def clear_context(bot: Telegram.Telegram, update: Telegram.DataTypes.Updat
 
 
 if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     openai.api_key = config.OPENAI_API_KEY
     bot = Telegram.Telegram(config.TELEGRAM_API_KEY)
     bot.addHandler(Telegram.Handler.CommandHandler('start', start, "start"))
     bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', clear_context, "clear context"))
     bot.addHandler(Telegram.Handler.Handler('', kek))
-    asyncio.run(bot.run())
+    loop.create_task(bot.run())
+    loop.run_forever()
