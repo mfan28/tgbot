@@ -38,11 +38,11 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
 
 
 async def start(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
-    if update.message.chat not in bot.UserManager.users():
+    if update.message.chat.id not in bot.UserManager.users():
         bot.UserManager.createUser(update.message.chat)
-        await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы зарегистрированы')
+        await bot.sendMessage(update.message.chat, f'{update.message.chat.first_name}, вы зарегистрированы')
     else:
-        await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы не нуждаетесь в регистрации')
+        await bot.sendMessage(update.message.chat, f'{update.message.chat.first_name}, вы не нуждаетесь в регистрации')
 
 
 async def clear_context(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):

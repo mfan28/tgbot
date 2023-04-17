@@ -18,7 +18,7 @@ class UserManager:
     def createUser(self, chat: Chat):
         if str(chat.id) not in self.users():
             with open(self.UsersFolder + str(chat.id), 'w') as f:
-                json.dump({'id': chat.id, 'username': chat.username, 'context': [], 'messages': []}, f, indent='\t', ensure_ascii=False)
+                json.dump({'id': chat.id, 'username': chat.first_name, 'context': [], 'messages': []}, f, indent='\t', ensure_ascii=False)
                 logging.info(f'User {chat.id} created')
 
     def __getitem__(self, item):

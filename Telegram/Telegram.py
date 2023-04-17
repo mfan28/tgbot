@@ -42,7 +42,7 @@ class Telegram:
 
     async def getMe(self) -> DataTypes.User:
         async with self.session.get(self.apiEndpoint + 'getMe') as response:
-            if await json.loads(response.text())['ok']:
+            if json.loads(await response.text())['ok']:
                 return DataTypes.User(json.loads(await response.text())['result'])
 
     def addHandler(self, handler: Handler):
@@ -92,6 +92,7 @@ class Telegram:
             asyncio.create_task(self.UserManager.clearCache())
             self.session = aiohttp.ClientSession()
             await self.setMyCommands()
+            logging.info(await self.getMe())
             while True:
                 self.updates = await self.getUpdates()
                 for i in self.updates:
