@@ -1,4 +1,3 @@
-import logging
 from typing import Callable
 from . import DataTypes
 from . import Telegram
@@ -14,14 +13,13 @@ class Handler:
         return f'((HANDLER) (CALLBACK = {self.callback}) (TEXT = {self.text}))'
 
     async def check(self, bot: Telegram, update: DataTypes.Update) -> bool:
-        try:
+        if update.message:
             if self.text in update.message.text:
                 asyncio.create_task(self.callback(bot, update))
                 return True
             else:
                 return False
-        except Exception as e:
-            logging.exception(e)
+        else:
             return False
 
 

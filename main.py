@@ -6,15 +6,17 @@ import config
 import UserManager
 from UserManager import Exceptions
 from time import time
+import time as t
 
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     try:
-        cachedUser = UserManager[update.message.chat.id]
+        cachedUser = bot.UserManager[update.message.chat.id]
     except Exceptions.NotRegistered:
         await bot.sendMessage(update.message.chat, 'Вы не зарегистрированы')
         return
     cachedUser.cachedUser['context'].append({'role': 'user', 'content': update.message.text})
+    cachedUser.cachedUser['messages'].append({'role': 'user', 'content': update.message.text, 'time': t.ctime()})
     message = await bot.sendMessage(update.message.chat, 'Бот обрабатывает ваш запрос...')
     comp = await openai.ChatCompletion.acreate(
         model='gpt-3.5-turbo-0301',
@@ -32,12 +34,13 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
             message = await bot.editMessageText(message.chat, message, j)
     await bot.editMessageText(message.chat, message, j)
     cachedUser.cachedUser['context'].append({'role': 'assistant', 'content': j})
+    cachedUser.cachedUser['messages'].append({'role': 'assistant', 'content': j, 'time': t.ctime()})
     cachedUser.save()
 
 
 async def start(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
-    if update.message.chat not in UserManager.users():
-        UserManager.createUser(update.message.chat)
+    if update.message.chat not in bot.UserManager.users():
+        bot.UserManager.createUser(update.message.chat)
         await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы зарегистрированы')
     else:
         await bot.sendMessage(update.message.chat, f'{update.message.chat.username}, вы не нуждаетесь в регистрации')
@@ -45,7 +48,7 @@ async def start(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
 
 async def clear_context(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     try:
-        cachedUser = UserManager[update.message.chat.id]
+        cachedUser = bot.UserManager[update.message.chat.id]
     except Exceptions.NotRegistered:
         await bot.sendMessage(update.message.chat, 'Вы не зарегистрированы')
         return
@@ -55,7 +58,6 @@ async def clear_context(bot: Telegram.Telegram, update: Telegram.DataTypes.Updat
 
 
 if __name__ == '__main__':
-    UserManager = UserManager.UserManager()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     openai.api_key = config.OPENAI_API_KEY
     bot = Telegram.Telegram(config.TELEGRAM_API_KEY)

@@ -1,23 +1,41 @@
 import aiohttp
+from io import BytesIO
 from . import DataTypes
 from .Handler import Handler, CommandHandler
 import json
 from typing import List
 import logging
+import asyncio
+import UserManager
 
 
 class Telegram:
-    def __init__(self, token: str):
+    def __init__(self, token: str, url: str='', cert: str=''):
         self.apiEndpoint = f'https://api.telegram.org/bot{token}/'
         self.offset = 0
         self.updates = []
         self.handlers = []
+        self.cert = cert
+        self.url = url
+        self.UserManager = UserManager.UserManager()
         logging.info('bot init success')
 
     async def setMyCommands(self) -> bool:
         a = [json.loads(str(DataTypes.BotCommand(i.command, i.description)).replace('\'', '\"')) for i in self.handlers if isinstance(i, CommandHandler)]
         async with self.session.get(self.apiEndpoint + 'setMyCommands', params={'commands': str(a).replace('\'', '\"')}) as response:
             if json.loads(await response.text()):
+                logging.info(f'commands setted {a}')
+                return True
+            else:
+                return False
+
+    async def setWebhook(self):
+        formdata = aiohttp.FormData()
+        with open(self.cert, 'rb') as f:
+            formdata.add_field('file', BytesIO(f.read()))
+        async with self.session.post(self.apiEndpoint + 'setWebhook', params={'url': self.url, 'certificate': formdata}) as response:
+            if json.loads(await response.text()):
+                logging.info(f'Webhook setted on {self.url}')
                 return True
             else:
                 return False
@@ -37,7 +55,9 @@ class Telegram:
             response = json.loads(await response.text())
             if response['ok'] and response['result']:
                 self.offset = response['result'][-1]['update_id'] + 1
-                return [DataTypes.Update(i) for i in response['result']]
+                result = [DataTypes.Update(i) for i in response['result']]
+                logging.info(f'updates getted {result}')
+                return result
             else:
                 return []
 
@@ -54,6 +74,7 @@ class Telegram:
                                              'text': text}) as response:
             response = json.loads(await response.text())
             if response['ok'] and response['result']:
+                logging.info(f'message edited {message.message_id}')
                 return DataTypes.Message(response['result'])
 
     async def sendChatAction(self, chat: DataTypes.Chat, action: str) -> bool:
@@ -61,17 +82,32 @@ class Telegram:
                                      params={'chat_id': chat.id, 'action': action}) as response:
             response = json.loads(await response.text())
         if response:
+            logging.info(f'Action sended {action}, {chat.id}')
             return True
         else:
             return False
 
-    async def run(self):
-        self.session = aiohttp.ClientSession()
-        await self.setMyCommands()
-        while True:
-            self.updates = await self.getUpdates()
-            for i in self.updates:
-                for j in self.handlers:
-                    if await j.check(self, i):
-                        break
-                self.updates.remove(i)
+    async def run(self, webhook=False):
+        if not webhook:
+            asyncio.create_task(self.UserManager.clearCache())
+            self.session = aiohttp.ClientSession()
+            await self.setMyCommands()
+            while True:
+                self.updates = await self.getUpdates()
+                for i in self.updates:
+                    for j in self.handlers:
+                        if await j.check(self, i):
+                            break
+                    self.updates.remove(i)
+        else:
+            asyncio.create_task(self.UserManager.clearCache())
+            self.session = aiohttp.ClientSession()
+            await self.setWebhook()
+            await self.setMyCommands()
+            while True:
+                for i in self.updates:
+                    for j in self.handlers:
+                        if await j.check(self, i):
+                            break
+                    self.updates.remove(i)
+
