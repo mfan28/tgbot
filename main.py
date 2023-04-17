@@ -58,10 +58,8 @@ if __name__ == '__main__':
     UserManager = UserManager.UserManager()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     openai.api_key = config.OPENAI_API_KEY
-    loop = asyncio.get_event_loop()
     bot = Telegram.Telegram(config.TELEGRAM_API_KEY)
     bot.addHandler(Telegram.Handler.CommandHandler('start', start, "start"))
     bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', clear_context, "clear context"))
     bot.addHandler(Telegram.Handler.Handler('', kek))
-    loop.create_task(bot.run())
-    loop.run_forever()
+    asyncio.run(bot.run())

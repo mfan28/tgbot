@@ -8,7 +8,6 @@ import logging
 
 class Telegram:
     def __init__(self, token: str):
-        self.session = aiohttp.ClientSession()
         self.apiEndpoint = f'https://api.telegram.org/bot{token}/'
         self.offset = 0
         self.updates = []
@@ -67,6 +66,7 @@ class Telegram:
             return False
 
     async def run(self):
+        self.session = aiohttp.ClientSession()
         await self.setMyCommands()
         while True:
             self.updates = await self.getUpdates()
