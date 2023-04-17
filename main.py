@@ -3,11 +3,10 @@ import asyncio
 import logging
 import openai
 import config
-import UserManager
 from UserManager import Exceptions
 from time import time
 import time as t
-
+from flask import Flask
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     try:
