@@ -20,10 +20,11 @@ class Handler:
 
 
 class CommandHandler(Handler):
-    def __init__(self, command: str, callback: Callable):
+    def __init__(self, command: str, callback: Callable, description: str):
         super().__init__('/' + command, callback)
         self.command = command
         self.callback = callback
+        self.description = description
 
     def __repr__(self):
         return super().__repr__()

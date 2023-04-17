@@ -15,15 +15,13 @@ class Telegram:
         self.handlers = []
         logging.info('bot init success')
 
-    async def setMyCommands(self):
-        a = [json.loads(str(DataTypes.BotCommand(i.command, "")).replace('\'', '\"')) for i in self.handlers if isinstance(i, CommandHandler)]
-        print(str(a))
-        async with self.session.get(self.apiEndpoint + 'setMyCommands', params={'commands': str(a)}) as response:
+    async def setMyCommands(self) -> bool:
+        a = [json.loads(str(DataTypes.BotCommand(i.command, i.description)).replace('\'', '\"')) for i in self.handlers if isinstance(i, CommandHandler)]
+        async with self.session.get(self.apiEndpoint + 'setMyCommands', params={'commands': str(a).replace('\'', '\"')}) as response:
             if json.loads(await response.text()):
-                print(json.loads(await response.text()))
                 return True
             else:
-                False
+                return False
 
     async def getMe(self) -> DataTypes.User:
         async with self.session.get(self.apiEndpoint + 'getMe') as response:
