@@ -111,7 +111,7 @@ class Telegram:
 
     async def run(self, webhook=False):
         if not webhook:
-            asyncio.create_task(self.UserManager.clearCache())
+            asyncio.create_task(self.UserManager.saveAll())
             self.session = aiohttp.ClientSession()
             await self.setMyCommands()
             logging.info(await self.getMe())
