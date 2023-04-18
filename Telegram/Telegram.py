@@ -9,7 +9,6 @@ import asyncio
 import UserManager
 import Singleton
 
-@Singleton.singleton
 class Telegram:
     def __init__(self, token: str, url: str='', cert: str=''):
         self.apiEndpoint = f'https://api.telegram.org/bot{token}/'
@@ -34,7 +33,7 @@ class Telegram:
         formdata = aiohttp.FormData()
         with open(self.cert, 'rb') as f:
             formdata.add_field('file', BytesIO(f.read()))
-        async with self.session.post(self.apiEndpoint + 'setWebhook', params={'url': self.url, 'certificate': formdata}) as response:
+        async with self.session.post(self.apiEndpoint + 'setWebhook', params={'url': self.url}, data=formdata) as response:
             logging.info(json.loads(await response.text()))
             if json.loads(await response.text())['ok']:
                 logging.info(f'Webhook setted on {self.url}')
@@ -105,7 +104,7 @@ class Telegram:
         else:
             asyncio.create_task(self.UserManager.clearCache())
             self.session = aiohttp.ClientSession()
-            #await self.setWebhook()
+            await self.setWebhook()
             await self.setMyCommands()
             while True:
                 for i in self.updates:
