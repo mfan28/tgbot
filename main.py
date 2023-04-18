@@ -15,6 +15,7 @@ def web(bot: Telegram.Telegram):
     from flask import request
     @app.route('/', methods=['POST', 'GET'])
     def index():
+        logging.info(request.args)
         return request.args
 
     app.run(host=config.HOST, port=config.PORT, ssl_context=(config.CERT, config.KEY))

@@ -31,6 +31,10 @@ class Telegram:
     async def getWebhookInfo(self):
         async with self.session.get(self.apiEndpoint + 'getWebhookInfo') as response:
             logging.info(json.loads(await response.text()))
+            if json.loads(await response.text())['ok'] and (not json.loads(await response.text())['result']['url'] or json.loads(await response.text())['result']['url'] != self.url):
+                return True
+            else:
+                return False
 
     async def setWebhook(self):
         data = {
@@ -109,7 +113,8 @@ class Telegram:
             asyncio.create_task(self.UserManager.clearCache())
             self.session = aiohttp.ClientSession()
             await self.setWebhook()
-            await self.getWebhookInfo()
+            if await self.getWebhookInfo():
+                await self.setWebhook()
             await self.setMyCommands()
             while True:
                 for i in self.updates:
