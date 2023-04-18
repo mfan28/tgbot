@@ -8,8 +8,9 @@ import logging
 import asyncio
 import UserManager
 
+
 class Telegram:
-    def __init__(self, token: str, url: str='', cert: str=''):
+    def __init__(self, token: str, url: str = '', cert: str = ''):
         self.apiEndpoint = f'https://api.telegram.org/bot{token}/'
         self.offset = 0
         self.updates = []
@@ -20,8 +21,10 @@ class Telegram:
         logging.info('bot init success')
 
     async def setMyCommands(self) -> bool:
-        a = [json.loads(str(DataTypes.BotCommand(i.command, i.description)).replace('\'', '\"')) for i in self.handlers if isinstance(i, CommandHandler)]
-        async with self.session.get(self.apiEndpoint + 'setMyCommands', params={'commands': str(a).replace('\'', '\"')}) as response:
+        a = [json.loads(str(DataTypes.BotCommand(i.command, i.description)).replace('\'', '\"')) for i in self.handlers
+             if isinstance(i, CommandHandler)]
+        async with self.session.get(self.apiEndpoint + 'setMyCommands',
+                                    params={'commands': str(a).replace('\'', '\"')}) as response:
             if json.loads(await response.text()):
                 logging.info(f'commands setted {a}')
                 return True
@@ -31,7 +34,9 @@ class Telegram:
     async def getWebhookInfo(self):
         async with self.session.get(self.apiEndpoint + 'getWebhookInfo') as response:
             logging.info(json.loads(await response.text()))
-            if json.loads(await response.text())['ok'] and (not json.loads(await response.text())['result']['url'] or json.loads(await response.text())['result']['url'] != self.url):
+            if json.loads(await response.text())['ok'] and (not json.loads(await response.text())['result']['url'] or
+                                                            json.loads(await response.text())['result'][
+                                                                'url'] != self.url):
                 return True
             else:
                 return False
@@ -96,6 +101,14 @@ class Telegram:
         else:
             return False
 
+    async def solveUpdates(self):
+        for i in self.updates:
+            logging.info(i)
+            for j in self.handlers:
+                if await j.check(self, i):
+                    break
+            self.updates.remove(i)
+
     async def run(self, webhook=False):
         if not webhook:
             asyncio.create_task(self.UserManager.clearCache())
@@ -116,11 +129,3 @@ class Telegram:
             if await self.getWebhookInfo():
                 await self.setWebhook()
             await self.setMyCommands()
-            while True:
-                for i in self.updates:
-                    logging.info(i)
-                    for j in self.handlers:
-                        if await j.check(self, i):
-                            break
-                    self.updates.remove(i)
-

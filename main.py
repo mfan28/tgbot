@@ -13,12 +13,14 @@ from threading import Thread
 def web(bot: Telegram.Telegram):
     app = Flask(__name__)
     from flask import request
-    @app.route('/', methods=['POST', 'GET'])
+    @app.route('/', methods=['POST'])
     def index():
-        logging.info(request.args)
-        return request.args
+        bot.updates.append(Telegram.DataTypes.Update(request.json))
+        asyncio.create_task(bot.solveUpdates())
+        return ''
 
     app.run(host=config.HOST, port=config.PORT, ssl_context=(config.CERT, config.KEY))
+
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     try:
