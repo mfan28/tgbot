@@ -28,7 +28,7 @@ class UserManager:
     async def clearCache(self):
         def human_readable(size):
             if size < 1024:
-                return f'{size}Б'
+                return f'{size}B'
             elif 1024 <= size < 1024 ** 2:
                 return f'{size / 1024:.2f}KB'
             elif 1024 ** 2 <= size < 1024 ** 3:
