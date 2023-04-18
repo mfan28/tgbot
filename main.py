@@ -79,5 +79,5 @@ if __name__ == '__main__':
     bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', clear_context, "clear context"))
     bot.addHandler(Telegram.Handler.Handler('', kek))
     loop.create_task(bot.run(webhook=True))
-    Thread(target=web, args=(bot, loopa)).start()
+    Thread(target=web, args=(bot, loop)).start()
     loop.run_forever()
