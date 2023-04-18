@@ -10,13 +10,13 @@ import time as t
 from threading import Thread
 
 
-def web(bot: Telegram.Telegram):
+def web(bot: Telegram.Telegram, loop):
     app = Flask(__name__)
     from flask import request
     @app.route('/', methods=['POST'])
     def index():
         bot.updates.append(Telegram.DataTypes.Update(request.json))
-        asyncio.create_task(bot.solveUpdates())
+        asyncio.run_coroutine_threadsafe(bot.solveUpdates(), loop)
         return ''
 
     app.run(host=config.HOST, port=config.PORT, ssl_context=(config.CERT, config.KEY))
@@ -79,5 +79,5 @@ if __name__ == '__main__':
     bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', clear_context, "clear context"))
     bot.addHandler(Telegram.Handler.Handler('', kek))
     loop.create_task(bot.run(webhook=True))
-    Thread(target=web, args=(bot,)).start()
+    Thread(target=web, args=(bot, loopa)).start()
     loop.run_forever()
