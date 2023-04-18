@@ -4,7 +4,7 @@ from typing import Dict
 
 class User:
     def __init__(self, data: Dict):
-        for k, v in data .items():
+        for k, v in data.items():
             self.__setattr__(k, v)
 
     def __repr__(self):
@@ -49,6 +49,15 @@ class Chat:
     def __init__(self, data: Dict):
         for k, v in data.items():
             self.__setattr__(k, v)
+
+    def __repr__(self):
+        return str(self.__dict__)
+
+
+class BotCommand:
+    def __init__(self, command: str, description: str):
+        self.command = command
+        self.description = description
 
     def __repr__(self):
         return str(self.__dict__)
