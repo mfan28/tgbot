@@ -7,7 +7,6 @@ from typing import List
 import logging
 import asyncio
 import UserManager
-import Singleton
 
 class Telegram:
     def __init__(self, token: str, url: str='', cert: str=''):
@@ -28,6 +27,10 @@ class Telegram:
                 return True
             else:
                 return False
+
+    async def getWebhookInfo(self):
+        async with self.session.get(self.apiEndpoint + 'getWebhookInfo') as response:
+            logging.info(json.loads(await response.text()))
 
     async def setWebhook(self):
         with aiohttp.MultipartWriter() as mp:
@@ -105,6 +108,7 @@ class Telegram:
             asyncio.create_task(self.UserManager.clearCache())
             self.session = aiohttp.ClientSession()
             await self.setWebhook()
+            await self.getWebhookInfo()
             await self.setMyCommands()
             while True:
                 for i in self.updates:

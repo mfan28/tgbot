@@ -4,7 +4,7 @@ import logging
 import openai
 import config
 from UserManager import Exceptions
-from flask import Flask, request
+from flask import Flask
 from time import time
 import time as t
 from threading import Thread
@@ -12,10 +12,10 @@ from threading import Thread
 
 def web(bot: Telegram.Telegram):
     app = Flask(__name__)
-
+    from flask import request
     @app.route('/', methods=['POST', 'GET'])
     def index():
-        return reqeust.args
+        return request.args
 
     app.run(host=config.HOST, port=config.PORT, ssl_context=(config.CERT, config.KEY))
 
