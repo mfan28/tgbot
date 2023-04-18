@@ -42,7 +42,7 @@ class UserManager:
             for i, k in self.cachedUsers.items():
                 with open(self.UsersFolder + str(i), 'w') as f:
                     json.dump(k, f, indent='\t', ensure_ascii=False)
-            self.cachedUsers[i].clear()
+            self.cachedUsers.clear()
             sizea = sys.getsizeof(self.cachedUsers)
             logging.info(f'UserManager cache cleared, cleared {human_readable(sizeb - sizea)}')
 
