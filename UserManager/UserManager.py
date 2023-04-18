@@ -5,6 +5,7 @@ import asyncio
 from Telegram.DataTypes import *
 from Singleton import singleton
 from . import Exceptions
+import sys
 
 
 @singleton
@@ -25,13 +26,25 @@ class UserManager:
         return CachedUser(item)
 
     async def clearCache(self):
+        def human_readable(size):
+            if size < 1024:
+                return f'{size}Б'
+            elif 1024 <= size < 1024 ** 2:
+                return f'{size / 1024:.2f}KB'
+            elif 1024 ** 2 <= size < 1024 ** 3:
+                return f'{size / 1024 ** 2:.2f}MB'
+            elif 1024 ** 3 <= size:
+                return f'{size / 1024 ** 3:.2f}GB'
+
         while True:
             await asyncio.sleep(300)
-            for i, k in self.cachedUsers.items():
+            sizeb = sys.getsizeof(self.cachedUsers)
+            for i, k in list(self.cachedUsers.items()):
                 with open(self.UsersFolder + str(i), 'w') as f:
                     json.dump(k, f, indent='\t', ensure_ascii=False)
                 del self.cachedUsers[i]
-            logging.info('UserManager cache cleared')
+            sizea = sys.getsizeof(self.cachedUsers)
+            logging.info(f'UserManager cache cleared, cleared {human_readable(sizeb - sizea)}')
 
 
 class CachedUser:
