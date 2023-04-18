@@ -39,10 +39,10 @@ class UserManager:
         while True:
             await asyncio.sleep(300)
             sizeb = sys.getsizeof(self.cachedUsers)
-            for i, k in list(self.cachedUsers.items()):
+            for i, k in self.cachedUsers.items():
                 with open(self.UsersFolder + str(i), 'w') as f:
                     json.dump(k, f, indent='\t', ensure_ascii=False)
-                del self.cachedUsers[i]
+            self.cachedUsers[i].clear()
             sizea = sys.getsizeof(self.cachedUsers)
             logging.info(f'UserManager cache cleared, cleared {human_readable(sizeb - sizea)}')
 
