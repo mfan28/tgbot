@@ -33,16 +33,17 @@ class Telegram:
             logging.info(json.loads(await response.text()))
 
     async def setWebhook(self):
-        with aiohttp.MultipartWriter() as mp:
-            part = mp.append(open(self.cert, 'rb'))
-            part.set_content_disposition('certificate')
-            async with self.session.post(self.apiEndpoint + 'setWebhook', params={'url': self.url}, data=mp) as response:
-                logging.info(json.loads(await response.text()))
-                if json.loads(await response.text())['ok']:
-                    logging.info(f'Webhook setted on {self.url}')
-                    return True
-                else:
-                    return False
+        data = {
+            'url': self.url,
+            'certificate': open(self.cert, 'rb')
+        }
+        async with self.session.post(self.apiEndpoint + 'setWebhook', data=data) as response:
+            logging.info(json.loads(await response.text()))
+            if json.loads(await response.text())['ok']:
+                logging.info(f'Webhook setted on {self.url}')
+                return True
+            else:
+                return False
 
     async def getMe(self) -> DataTypes.User:
         async with self.session.get(self.apiEndpoint + 'getMe') as response:
