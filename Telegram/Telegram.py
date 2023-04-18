@@ -129,3 +129,5 @@ class Telegram:
             if await self.getWebhookInfo():
                 await self.setWebhook()
             await self.setMyCommands()
+            while True:
+                asyncio.sleep(10)
