@@ -71,7 +71,7 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     openai.api_key = config.OPENAI_API_KEY
-    bot = Telegram.Telegram(config.TELEGRAM_API_KEY, url='https://45.146.167.48:80', cert=config.CERT)
+    bot = Telegram.Telegram(config.TELEGRAM_API_KEY, url=f'https://{config.HOST}:{config.PORT}', cert=config.CERT)
     bot.addHandler(Telegram.Handler.CommandHandler('start', start, "start"))
     bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', clear_context, "clear context"))
     bot.addHandler(Telegram.Handler.Handler('', kek))

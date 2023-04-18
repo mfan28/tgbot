@@ -1,6 +1,6 @@
 import aiohttp
-from io import BytesIO
 from . import DataTypes
+import config
 from .Handler import Handler, CommandHandler
 import json
 from typing import List
@@ -30,16 +30,16 @@ class Telegram:
                 return False
 
     async def setWebhook(self):
-        formdata = aiohttp.FormData()
-        with open(self.cert, 'rb') as f:
-            formdata.add_field('file', BytesIO(f.read()))
-        async with self.session.post(self.apiEndpoint + 'setWebhook', params={'url': self.url}, data=formdata) as response:
-            logging.info(json.loads(await response.text()))
-            if json.loads(await response.text())['ok']:
-                logging.info(f'Webhook setted on {self.url}')
-                return True
-            else:
-                return False
+        with aiohttp.MultipartWriter() as mp:
+            part = mp.append(open(self.cert, 'rb'))
+            part.set_content_disposition('certificate')
+            async with self.session.post(self.apiEndpoint + 'setWebhook', params={'url': self.url}, data=mp) as response:
+                logging.info(json.loads(await response.text()))
+                if json.loads(await response.text())['ok']:
+                    logging.info(f'Webhook setted on {self.url}')
+                    return True
+                else:
+                    return False
 
     async def getMe(self) -> DataTypes.User:
         async with self.session.get(self.apiEndpoint + 'getMe') as response:
