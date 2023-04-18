@@ -123,7 +123,7 @@ class Telegram:
                             break
                     self.updates.remove(i)
         else:
-            asyncio.create_task(self.UserManager.clearCache())
+            asyncio.create_task(self.UserManager.saveAll())
             self.session = aiohttp.ClientSession()
             await self.setWebhook()
             if await self.getWebhookInfo():
