@@ -22,7 +22,7 @@ class Handler:
     def __repr__(self):
         return f'((HANDLER) (CALLBACK = {self.callback}) (TEXT = {self.text}))'
 
-    async def check(self, bot: Telegram, update: DataTypes.Update) -> bool
+    async def check(self, bot: Telegram, update: DataTypes.Update) -> bool:
         try:
             a = update.message.text
         except Exception:
