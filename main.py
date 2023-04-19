@@ -45,7 +45,7 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
             await asyncio.sleep(20)
         except openai.InvalidRequestError as tk:
             logging.info(tk.error)
-            del cachedUser.cachedUser['context'][1]
+            del cachedUser.cachedUser['context'][1:len(cachedUser.cachedUser['context']) // 2]
     j = ''
     t1, t2 = time(), time()
     async for i in comp:
