@@ -10,6 +10,14 @@ import sys
 
 @singleton
 class UserManager:
+    '''
+    UserManager class
+
+    Attributes:
+        self.UsersFolder (str): path to Users folder
+        self.users (list[str]): list of user's ids in system
+        self.cachedUsers (dict): dict of cached users
+    '''
     def __init__(self):
         self.UsersFolder = './UserManager/Users/'
         self.users = lambda *x: os.listdir(self.UsersFolder)
@@ -35,6 +43,16 @@ class UserManager:
 
 
 class CachedUser:
+    '''
+    CachedUser class
+
+    Args:
+        id (int): id of user
+    Attributes:
+        self.id (id): user id
+        self.cachedUser (dict): loaded user data
+        self.UserManager (UserManager): instance of UserManager
+    '''
     def __init__(self, id: int):
         self.id = id
         self.UserManager = UserManager()

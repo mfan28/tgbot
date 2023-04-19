@@ -31,11 +31,16 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
     cachedUser.cachedUser['context'].append({'role': 'user', 'content': update.message.text})
     cachedUser.cachedUser['messages'].append({'role': 'user', 'content': update.message.text, 'time': t.ctime()})
     message = await bot.sendMessage(update.message.chat, 'Бот обрабатывает ваш запрос...')
-    comp = await openai.ChatCompletion.acreate(
-        model='gpt-3.5-turbo-0301',
-        messages=cachedUser.cachedUser['context'],
-        stream=True
-    )
+    while True:
+        try:
+            comp = await openai.ChatCompletion.acreate(
+                model='gpt-3.5-turbo-0301',
+                messages=cachedUser.cachedUser['context'],
+                stream=True
+                )
+            break
+        except openai.error.RateLimitError:
+            pass
     j = ''
     t1, t2 = time(), time()
     async for i in comp:

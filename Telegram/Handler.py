@@ -5,6 +5,16 @@ import asyncio
 
 
 class Handler:
+    """
+    Handler class
+
+    Args:
+        text (str): text to check in update
+        callback (Callable): function to call on success
+    Attributes:
+        self.text (str): text to check in update
+        self.callback (Callable): function to call
+    """
     def __init__(self, text: str, callback: Callable):
         self.text = text
         self.callback = callback
@@ -25,6 +35,18 @@ class Handler:
 
 
 class CommandHandler(Handler):
+    """
+    Command Handler class
+
+    Args:
+        command (str): command to check in update
+        callback (Callable): function to call on success
+        description (str): command description
+    Attributes:
+        self.text (str): text to check in update
+        self.callback (Callable): function to call
+        self.description (str): command description
+    """
     def __init__(self, command: str, callback: Callable, description: str):
         super().__init__('/' + command, callback)
         self.command = command
