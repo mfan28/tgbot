@@ -43,7 +43,8 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
             logging.info(update, ratelimit.error)
             await bot.editMessageText(message.chat, message, 'Высокая нагрузка, ждем 20 секунд...')
             await asyncio.sleep(20)
-        except openai.InvalidRequestError:
+        except openai.InvalidRequestError as tk:
+            logging.info(tk.error)
             del cachedUser.cachedUser['context'][1]
     j = ''
     t1, t2 = time(), time()
