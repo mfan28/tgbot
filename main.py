@@ -70,7 +70,7 @@ async def clear_context(bot: Telegram.Telegram, update: Telegram.DataTypes.Updat
     await bot.sendMessage(update.message.chat, 'Контекст очищен')
 
 
-if __name__ == '__main__':
+def start():
     loop = asyncio.get_event_loop()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     openai.api_key = config.OPENAI_API_KEY
