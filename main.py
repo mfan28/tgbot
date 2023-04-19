@@ -41,6 +41,8 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
             break
         except openai.error.RateLimitError as ratelimit:
             logging.info(update, ratelimit.error)
+            await bot.sendMessage(update.message.chat, 'Высокая нагрузка, ждем 20 секунд...')
+            await asyncio.sleep(20)
     j = ''
     t1, t2 = time(), time()
     async for i in comp:
