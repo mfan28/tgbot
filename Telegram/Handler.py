@@ -12,13 +12,14 @@ class Handler:
     def __repr__(self):
         return f'((HANDLER) (CALLBACK = {self.callback}) (TEXT = {self.text}))'
 
-    async def check(self, bot: Telegram, update: DataTypes.Update) -> bool:
-        if update.message:
-            if self.text in update.message.text:
-                asyncio.create_task(self.callback(bot, update))
-                return True
-            else:
-                return False
+    async def check(self, bot: Telegram, update: DataTypes.Update) -> bool
+        try:
+            a = update.message.text
+        except Exception:
+            return False
+        if self.text in update.message.text:
+            asyncio.create_task(self.callback(bot, update))
+            return True
         else:
             return False
 
