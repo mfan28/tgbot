@@ -19,7 +19,7 @@ def web(bot: Telegram.Telegram, loop):
         asyncio.run_coroutine_threadsafe(bot.solveUpdates(), loop)
         return ''
 
-    app.run()
+    app.run(host=config.HOST, port=config.PORT, ssl_context=(config.CERT, config.KEY))
 
 
 async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
