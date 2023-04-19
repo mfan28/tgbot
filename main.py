@@ -39,8 +39,8 @@ async def kek(bot: Telegram.Telegram, update: Telegram.DataTypes.Update):
                 stream=True
                 )
             break
-        except openai.error.RateLimitError:
-            pass
+        except openai.error.RateLimitError as ratelimit:
+            logging.info(update, ratelimit.error)
     j = ''
     t1, t2 = time(), time()
     async for i in comp:
