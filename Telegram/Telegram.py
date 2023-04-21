@@ -79,6 +79,8 @@ class Telegram:
             'url': self.url,
             'certificate': open(self.cert, 'rb')
         }
+        if not self.session:
+            self.session = aiohttp.ClientSession()
         async with self.session.post(self.apiEndpoint + 'setWebhook', data=data) as response:
             logging.info(json.loads(await response.text()))
             if json.loads(await response.text())['ok']:
@@ -213,9 +215,6 @@ class Telegram:
         else:
             asyncio.create_task(self.UserManager.saveAll())
             self.session = aiohttp.ClientSession()
-            await self.setWebhook()
-            if await self.getWebhookInfo():
-                await self.setWebhook()
             await self.setMyCommands()
             while True:
                 await asyncio.sleep(10)
