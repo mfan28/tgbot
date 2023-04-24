@@ -71,19 +71,20 @@ class Bot(threading.Thread):
         super().__init__()
         self.tasks = []
         self.bot = Telegram.Telegram(config.TELEGRAM_API_KEY)
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
         openai.api_key = config.OPENAI_API_KEY
         self.bot.addHandler(Telegram.Handler.CommandHandler('start', self.start, "start"))
         self.bot.addHandler(Telegram.Handler.CommandHandler('clearcontext', self.clear_context, "clear context"))
         self.bot.addHandler(Telegram.Handler.Handler('', self.kek))
         self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        threading.Thread(target=self.loop.run_forever, daemon=True).start()
         super().start()
     
     def getLoad(self):
         return len(self.tasks)
-    
+
     def run(self):
-        asyncio.run_coroutine_threadsafe(self.bot.run(webhook=True), self.loop)
+        threading.Thread(target=asyncio.run, args=(self.bot.run(webhook=True),)).start()
         while True:
             if self.tasks:
                 while self.tasks:

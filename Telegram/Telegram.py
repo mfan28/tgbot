@@ -213,6 +213,7 @@ class Telegram:
                             break
                     self.updates.remove(i)
         else:
+            logging.info('bot started')
             asyncio.create_task(self.UserManager.saveAll())
             self.session = aiohttp.ClientSession()
             await self.setMyCommands()
